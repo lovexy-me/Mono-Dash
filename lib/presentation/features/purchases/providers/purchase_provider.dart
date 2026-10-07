@@ -18,13 +18,13 @@ class RevenueCatConfig {
   const RevenueCatConfig._();
 
   static const iosApiKey = 'appl_uQclCTdAgutFrwPUlmIzMxhagIe';
-  static const androidApiKey = 'goog_YjNRxmMCFThKyAaXIPAiralEXXJ';
+  static const androidApiKey = '';
   static const webApiKey = '';
   static const testApiKey = 'test_SEIhVrgkUMdVbyxHkyETYJbKADc';
   static const entitlementId = 'Mono Dash Unlimited';
   static const offeringId = 'default';
   static const freeServerLimit = 1;
-  static const bypassServerLimitCheck = false;
+  static const bypassServerLimitCheck = true;
   static const testFlightApiBaseUrl = 'https://testflight.dhcp.services';
 
   static String? get apiKey {
