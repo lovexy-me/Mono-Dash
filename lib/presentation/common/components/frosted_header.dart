@@ -83,13 +83,8 @@ class FrostedHeader extends StatelessWidget {
            if (showBlur && defaultTargetPlatform == TargetPlatform.android)
             Positioned.fill(
               child: IgnorePointer(
-                child: ClipRect(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12, tileMode: TileMode.decal),
-                    child: ColoredBox(
-                      color: (isDark ? CupertinoColors.black : CupertinoColors.white).withValues(alpha: 0.6),
-                    ),
-                  ),
+                child: ColoredBox(
+                  color: (isDark ? CupertinoColors.black : CupertinoColors.white).withValues(alpha: 0.96),
                 ),
               ),
             ),
