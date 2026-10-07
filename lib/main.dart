@@ -27,15 +27,21 @@ void main() async {
   final storageService = StorageService();
   await storageService.init();
 
+ final Widget app = ProviderScope(
+    overrides: [storageServiceProvider.overrideWithValue(storageService)],
+    child: const ToastificationWrapper(child: MyApp()),
+  );
   runApp(
     LiquidGlassWidgets.wrap(
-      child: ProviderScope(
-        overrides: [storageServiceProvider.overrideWithValue(storageService)],
-        child: const ToastificationWrapper(child: MyApp()),
-      ),
+      child: Platform.isAndroid
+          ? GlassAccessibilityScope(
+              reduceMotion: false,
+              reduceTransparency: true,
+              child: app,
+            )
+          : app,
     ),
   );
-}
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
