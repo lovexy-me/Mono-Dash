@@ -1,4 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'dart:ui' show ImageFilter, TileMode;
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:inspire_blur/inspire_blur.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
@@ -76,7 +80,20 @@ class FrostedHeader extends StatelessWidget {
       child: Stack(
         children: [
           // 1. 与 Nezha-Dash 相同的 GPU 渐进背景模糊层。
-          if (showBlur)
+           if (showBlur && defaultTargetPlatform == TargetPlatform.android)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: ClipRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12, tileMode: TileMode.decal),
+                    child: ColoredBox(
+                      color: (isDark ? CupertinoColors.black : CupertinoColors.white).withValues(alpha: 0.6),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          if (showBlur && defaultTargetPlatform != TargetPlatform.android)
             Positioned.fill(
               child: RepaintBoundary(
                 child: IgnorePointer(
