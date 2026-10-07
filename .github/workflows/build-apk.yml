@@ -3,6 +3,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      patch_url:
+        description: 'Patch URL (optional)'
+        required: false
+        default: ''
 permissions:
   contents: write
 jobs:
@@ -10,6 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Apply patch
+        if: ${{ github.event.inputs.patch_url != '' }}
+        run: |
+          curl -fsSL "${{ github.event.inputs.patch_url }}" -o /tmp/change.patch
+          git config user.name "lovexy-me"
+          git config user.email "lovexy-me@users.noreply.github.com"
+          git am /tmp/change.patch
+          git push origin HEAD:main
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
