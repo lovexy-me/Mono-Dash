@@ -26,14 +26,12 @@ import '../../../common/components/app_picker.dart';
 import '../../../common/components/frosted_scaffold.dart';
 import '../../../common/components/sub_menu_page.dart';
 import '../../panel_settings/widgets/edit_setting_value_sheet.dart';
-import '../../purchases/providers/purchase_provider.dart';
 import '../../settings/providers/app_lock_provider.dart';
 import '../../settings/providers/app_settings_provider.dart';
 import '../../settings/screens/app_lock_settings_page.dart';
 import '../../settings/screens/app_icon_settings_page.dart';
 import '../../settings/screens/card_style_settings_page.dart';
 import 'open_source_licenses_page.dart';
-import 'premium_purchase_page.dart';
 
 const _issueTrackerUrl = 'https://github.com/bin64/Mono-Dash/issues';
 const _privacyPolicyUrl =
@@ -76,9 +74,6 @@ class ServersSettingsTab extends ConsumerWidget {
     final customHeaders = settings?.customHeaders ?? const {};
     final localeOption = ref.watch(localeControllerProvider);
 
-    final purchaseAsync = ref.watch(purchaseControllerProvider);
-    final isUnlocked = purchaseAsync.valueOrNull?.isUnlocked ?? false;
-
     return FrostedScaffold(
       title: l10n.settings_title,
       showBackButton: false,
@@ -98,31 +93,6 @@ class ServersSettingsTab extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 132),
             sliver: SliverList.list(
               children: [
-                // Premium Section
-                SubMenuCard(
-                  title: l10n.settings_premium_title,
-                  children: [
-                    _SettingsRow(
-                      icon: isUnlocked
-                          ? CupertinoIcons.sparkles
-                          : CupertinoIcons.lock_shield,
-                      iconColor: isUnlocked
-                          ? CupertinoColors.systemPurple
-                          : CupertinoColors.systemGrey,
-                      title: l10n.settings_premium_unlimitedTitle,
-                      subtitle: isUnlocked
-                          ? l10n.settings_premium_unlimitedUnlocked
-                          : l10n.settings_premium_unlimitedLocked,
-                      onTap: () => Navigator.of(context).push(
-                        CupertinoPageRoute<void>(
-                          builder: (_) => const PremiumPurchasePage(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
                 // Security Section
                 SubMenuCard(
                   title: l10n.settings_security_title,

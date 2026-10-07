@@ -14,7 +14,6 @@ import 'core/router/app_router.dart';
 import 'core/storage/storage_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/widgets/ios_server_widget_bridge.dart';
-import 'presentation/features/purchases/providers/purchase_provider.dart';
 import 'presentation/features/settings/providers/app_settings_provider.dart';
 import 'presentation/features/settings/widgets/app_lock_gate.dart';
 import 'presentation/common/components/terminal/floating_terminal_bubble.dart';
@@ -75,8 +74,7 @@ class MyApp extends ConsumerWidget {
         appLocaleCode: widgetLocaleCode,
         appIconName: widgetAppIconName,
         child: _ICloudServerSyncMaintenance(
-          child: _PurchaseEntitlementMaintenance(
-            child: CupertinoApp.router(
+          child: CupertinoApp.router(
               debugShowCheckedModeBanner: false,
               onGenerateTitle: (context) =>
                   AppLocalizations.of(context).app_title,
@@ -100,7 +98,6 @@ class MyApp extends ConsumerWidget {
                 GlobalWidgetsLocalizations.delegate,
               ],
             ),
-          ),
         ),
       ),
     );
@@ -288,38 +285,6 @@ class _IosServerWidgetSettingsSyncState
       _lastSyncedAppIconName = appIconName;
     }
   }
-}
-
-class _PurchaseEntitlementMaintenance extends ConsumerStatefulWidget {
-  const _PurchaseEntitlementMaintenance({required this.child});
-
-  final Widget child;
-
-  @override
-  ConsumerState<_PurchaseEntitlementMaintenance> createState() =>
-      _PurchaseEntitlementMaintenanceState();
-}
-
-class _PurchaseEntitlementMaintenanceState
-    extends ConsumerState<_PurchaseEntitlementMaintenance> {
-  bool _scheduled = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _scheduled) return;
-      _scheduled = true;
-      unawaited(
-        ref
-            .read(purchaseControllerProvider.notifier)
-            .maybeRefreshEntitlementAfterFirstFrame(),
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.child;
 }
 
 class _AppIconAutoSync extends StatefulWidget {

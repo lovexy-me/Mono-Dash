@@ -13,8 +13,6 @@ import '../../../common/app_toast.dart';
 import '../../../common/components/action_sheet_launcher.dart';
 import '../../../common/components/action_sheet_scaffold.dart';
 import '../../../common/components/cupertino_grouped_form.dart';
-import '../../purchases/providers/purchase_provider.dart';
-import '../../purchases/widgets/purchase_prompt.dart';
 import '../providers/servers_provider.dart';
 
 class AddServerSheet extends ConsumerStatefulWidget {
@@ -203,14 +201,6 @@ class _AddServerSheetState extends ConsumerState<AddServerSheet> {
           _isEditing ? l10n.servers_saved : l10n.servers_added,
         );
         Navigator.of(context).pop();
-      }
-    } on ServerLimitReachedException catch (error) {
-      if (mounted) {
-        await showUnlimitedServersPurchasePrompt(
-          context,
-          ref,
-          serverCount: error.serverCount,
-        );
       }
     } catch (e) {
       if (cancelToken.isCancelled) return;

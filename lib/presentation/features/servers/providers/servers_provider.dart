@@ -16,7 +16,6 @@ import '../../../../data/repositories_impl/server_repository_impl.dart';
 import '../../../../domain/entities/dashboard.dart';
 import '../../../../domain/entities/server.dart';
 import '../../../../domain/repositories/server_repository.dart';
-import '../../purchases/providers/purchase_provider.dart';
 import '../../settings/providers/app_settings_provider.dart';
 
 part 'servers_provider.g.dart';
@@ -76,19 +75,6 @@ class ServersNotifier extends _$ServersNotifier {
     bool allowInsecureConnections = false,
   }) async {
     final repo = ref.read(serverRepositoryProvider);
-    final currentServers = await repo.list();
-    final purchaseState = await ref.read(purchaseControllerProvider.future);
-    if (!purchaseState.canAddServer(currentServers.length)) {
-      final l10n = ref.read(appLocalizationsProvider);
-      throw ServerLimitReachedException(
-        serverCount: currentServers.length,
-        freeServerLimit: purchaseState.freeServerLimit,
-        message: l10n.purchases_serverLimitReached(
-          purchaseState.freeServerLimit,
-          currentServers.length,
-        ),
-      );
-    }
 
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {

@@ -11,8 +11,6 @@ import '../../../../domain/entities/server.dart';
 import '../../../common/components/floating_tab_bar.dart';
 import '../../../common/components/frosted_action_button.dart';
 import '../../../common/components/frosted_scaffold.dart';
-import '../../purchases/providers/purchase_provider.dart';
-import '../../purchases/widgets/purchase_prompt.dart';
 import '../../settings/providers/app_settings_provider.dart';
 import '../providers/servers_provider.dart';
 import '../widgets/add_server_sheet.dart';
@@ -162,21 +160,7 @@ class _ServersPageState extends ConsumerState<ServersPage> with RouteAware {
   }
 
   Future<void> _handleAddServer() async {
-    final servers = ref.read(serversNotifierProvider).valueOrNull ?? const [];
-    final serverCount = servers.length;
-    final purchaseState = await ref.read(purchaseControllerProvider.future);
-    if (!mounted) return;
-
-    if (serverCount == 0 || purchaseState.canAddServer(serverCount)) {
-      await AddServerSheet.show(context);
-      return;
-    }
-
-    await showUnlimitedServersPurchasePrompt(
-      context,
-      ref,
-      serverCount: serverCount,
-    );
+    await AddServerSheet.show(context);
   }
 }
 
