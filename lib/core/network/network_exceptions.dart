@@ -37,8 +37,10 @@ class HttpException extends AppNetworkException {
 
 /// HTTP 200 但业务层返回 `code != 200`。
 class ApiBusinessException extends AppNetworkException {
-  const ApiBusinessException(int code, super.message)
-      : super(statusCode: code);
+  const ApiBusinessException(int code, super.message, {this.errorCode})
+    : super(statusCode: code);
+
+  final String? errorCode;
 }
 
 /// 响应体格式不符合预期（缺少 data 字段等）。

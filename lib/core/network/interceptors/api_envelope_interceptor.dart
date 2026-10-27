@@ -17,7 +17,11 @@ class ApiEnvelopeInterceptor extends Interceptor {
         requestOptions: response.requestOptions,
         response: response,
         type: DioExceptionType.badResponse,
-        error: ApiBusinessException(failure.code, failure.message),
+        error: ApiBusinessException(
+          failure.code,
+          failure.message,
+          errorCode: failure.errorCode,
+        ),
       ),
     );
   }
@@ -28,7 +32,11 @@ class ApiEnvelopeInterceptor extends Interceptor {
     final code = _codeOf(payload['code']);
     if (code == null || code == 200) return null;
 
-    return _ApiEnvelopeFailure(code, _messageOf(payload));
+    return _ApiEnvelopeFailure(
+      code,
+      _messageOf(payload),
+      payload['errorCode']?.toString(),
+    );
   }
 
   int? _codeOf(Object? value) {
@@ -45,8 +53,9 @@ class ApiEnvelopeInterceptor extends Interceptor {
 }
 
 class _ApiEnvelopeFailure {
-  const _ApiEnvelopeFailure(this.code, this.message);
+  const _ApiEnvelopeFailure(this.code, this.message, this.errorCode);
 
   final int code;
   final String message;
+  final String? errorCode;
 }

@@ -2454,8 +2454,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_sync_webDavUrlLabel => 'WebDAV URL';
 
   @override
-  String get settings_sync_webDavUrlPlaceholder =>
-      'https://example.com/dav/mono-dash/';
+  String get settings_sync_webDavUrlPlaceholder => 'https://example.com/dav/';
+
+  @override
+  String get settings_sync_webDavPathLabel => 'Sync file path';
+
+  @override
+  String get settings_sync_webDavPathHint =>
+      'Relative to the WebDAV URL; defaults to /mono-dash/data.json. The folder is created on first sync if needed.';
+
+  @override
+  String get settings_sync_webDavPathInvalid =>
+      'Enter a file path starting with /';
 
   @override
   String get settings_sync_webDavUsernameLabel => 'Username';
@@ -2468,6 +2478,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_sync_webDavPasswordPlaceholder => 'Optional';
+
+  @override
+  String get settings_sync_webDavShowPassword => 'Show password';
+
+  @override
+  String get settings_sync_webDavHidePassword => 'Hide password';
 
   @override
   String get settings_sync_webDavUrlInvalid =>
@@ -4315,6 +4331,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get panelSettings_apiInterface => 'API Interface';
+
+  @override
+  String get panelSettings_webPanelRequired =>
+      'Manage this in the 1Panel web panel';
+
+  @override
+  String get panelSettings_localApiKey => 'Connection key saved in this app';
+
+  @override
+  String get firewall_ruleStale =>
+      'This rule changed on the server. The list has been refreshed.';
+
+  @override
+  String get firewall_lockoutRisk =>
+      'The firewall blocked this change because it could cut off panel access.';
+
+  @override
+  String get firewall_operationInProgress => 'Operation in progress';
+
+  @override
+  String get firewall_familyFilter => 'IP version';
+
+  @override
+  String get firewall_allFamilies => 'All IP versions';
+
+  @override
+  String get firewall_stateManaged => 'Managed';
+
+  @override
+  String get firewall_stateAdopted => 'Adopted';
+
+  @override
+  String get firewall_stateExternal => 'External';
+
+  @override
+  String get firewall_stateDrifted => 'Changed';
+
+  @override
+  String get firewall_stateProtected => 'Protected';
+
+  @override
+  String get firewall_adoptRule => 'Adopt Rule';
+
+  @override
+  String get firewall_adoptRuleHint =>
+      'Edit or delete this rule in the app after adoption';
+
+  @override
+  String get firewall_adoptRuleConfirm =>
+      'Let 1Panel manage this external rule on the server?';
+
+  @override
+  String get firewall_readOnlyRule => 'This rule is read-only';
+
+  @override
+  String get firewall_readOnlyRuleHint =>
+      'Protected or unsupported rules cannot be changed in the app';
+
+  @override
+  String get firewall_noticeFamilyUnavailable =>
+      'Some IP versions are unavailable on this server.';
+
+  @override
+  String get firewall_noticeDefaultScopeMismatch =>
+      'The active rule scope differs from the default scope.';
+
+  @override
+  String get firewall_noticeManagedScopeInactive =>
+      'Some managed rule scopes are inactive.';
+
+  @override
+  String get firewall_noticeUnmanagedScopes =>
+      'Active rules exist outside the managed scope.';
+
+  @override
+  String get firewall_noticeRuntimeMismatch =>
+      'Running and saved firewall rules differ.';
+
+  @override
+  String get firewall_noticeDefaultPolicy =>
+      'The default firewall policy may affect these rules.';
+
+  @override
+  String get firewall_noticeManagedScopeMissing =>
+      'A managed rule scope is missing.';
 
   @override
   String get panelSettings_enabled => 'Enabled';
@@ -10556,6 +10657,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get databases_management => 'Database Management';
+
+  @override
+  String databases_managerNotInstalled(String name) {
+    return '$name is not installed';
+  }
+
+  @override
+  String get databases_managerInstallPrompt =>
+      'Install this database management tool from the App Store first.';
+
+  @override
+  String get databases_goToAppStore => 'Go to App Store';
+
+  @override
+  String get databases_serverAddressUnavailable =>
+      'Unable to get the server address';
+
+  @override
+  String databases_openManagerFailed(String name) {
+    return 'Unable to open $name';
+  }
+
+  @override
+  String get databases_webPageLoadFailed => 'Failed to load the web page';
 
   @override
   String get databases_changePassword => 'Change Password';

@@ -3352,9 +3352,21 @@
   "@settings_sync_webDavUrlLabel": {
     "description": "Label for the WebDAV URL field."
   },
-  "settings_sync_webDavUrlPlaceholder": "https://example.com/dav/mono-dash/",
+  "settings_sync_webDavUrlPlaceholder": "https://example.com/dav/",
   "@settings_sync_webDavUrlPlaceholder": {
     "description": "Placeholder for the WebDAV URL field."
+  },
+  "settings_sync_webDavPathLabel": "Sync file path",
+  "@settings_sync_webDavPathLabel": {
+    "description": "Label for the WebDAV sync file path field."
+  },
+  "settings_sync_webDavPathHint": "Relative to the WebDAV URL; defaults to /mono-dash/data.json. The folder is created on first sync if needed.",
+  "@settings_sync_webDavPathHint": {
+    "description": "Explains how the WebDAV sync folder is selected."
+  },
+  "settings_sync_webDavPathInvalid": "Enter a file path starting with /",
+  "@settings_sync_webDavPathInvalid": {
+    "description": "Validation error for the WebDAV sync file path."
   },
   "settings_sync_webDavUsernameLabel": "Username",
   "@settings_sync_webDavUsernameLabel": {
@@ -3371,6 +3383,14 @@
   "settings_sync_webDavPasswordPlaceholder": "Optional",
   "@settings_sync_webDavPasswordPlaceholder": {
     "description": "Placeholder for the WebDAV password field."
+  },
+  "settings_sync_webDavShowPassword": "Show password",
+  "@settings_sync_webDavShowPassword": {
+    "description": "Accessibility label for the WebDAV password visibility button."
+  },
+  "settings_sync_webDavHidePassword": "Hide password",
+  "@settings_sync_webDavHidePassword": {
+    "description": "Accessibility label for the WebDAV password visibility button."
   },
   "settings_sync_webDavUrlInvalid": "Enter a valid http or https URL",
   "@settings_sync_webDavUrlInvalid": {
@@ -5871,6 +5891,78 @@
   "@panelSettings_apiInterface": {
     "description": "Panel API interface setting title."
   },
+  "panelSettings_webPanelRequired": "Manage this in the 1Panel web panel",
+  "@panelSettings_webPanelRequired": {
+    "description": "Explains that session-only panel settings must be managed in the web panel."
+  },
+  "panelSettings_localApiKey": "Connection key saved in this app",
+  "@panelSettings_localApiKey": {
+    "description": "Label for the locally stored API connection key."
+  },
+  "firewall_ruleStale": "This rule changed on the server. The list has been refreshed.",
+  "@firewall_ruleStale": {
+    "description": "Shown when a firewall rule update fails due to a stale revision."
+  },
+  "firewall_lockoutRisk": "The firewall blocked this change because it could cut off panel access.",
+  "@firewall_lockoutRisk": {
+    "description": "Shown when the backend rejects a firewall rule that risks locking out the user."
+  },
+  "firewall_operationInProgress": "Operation in progress",
+  "@firewall_operationInProgress": {
+    "description": "Firewall service operation is still running."
+  },
+  "firewall_familyFilter": "IP version",
+  "@firewall_familyFilter": {
+    "description": "Filter firewall rules by IP version."
+  },
+  "firewall_allFamilies": "All IP versions",
+  "@firewall_allFamilies": {
+    "description": "Show firewall rules for all IP versions."
+  },
+  "firewall_stateManaged": "Managed",
+  "@firewall_stateManaged": {
+    "description": "Firewall rule managed by 1Panel."
+  },
+  "firewall_stateAdopted": "Adopted",
+  "@firewall_stateAdopted": {
+    "description": "Firewall rule adopted by 1Panel."
+  },
+  "firewall_stateExternal": "External",
+  "@firewall_stateExternal": {
+    "description": "Firewall rule not managed by 1Panel."
+  },
+  "firewall_stateDrifted": "Changed",
+  "@firewall_stateDrifted": {
+    "description": "Firewall rule differs from its saved state."
+  },
+  "firewall_stateProtected": "Protected",
+  "@firewall_stateProtected": {
+    "description": "Firewall rule protected from changes."
+  },
+  "firewall_adoptRule": "Adopt Rule",
+  "@firewall_adoptRule": {"description": "Adopt an external firewall rule into 1Panel management."},
+  "firewall_adoptRuleHint": "Edit or delete this rule in the app after adoption",
+  "@firewall_adoptRuleHint": {"description": "Explanation of rule adoption."},
+  "firewall_adoptRuleConfirm": "Let 1Panel manage this external rule on the server?",
+  "@firewall_adoptRuleConfirm": {"description": "Confirmation before adopting an external firewall rule."},
+  "firewall_readOnlyRule": "This rule is read-only",
+  "@firewall_readOnlyRule": {"description": "Label for an uneditable firewall rule."},
+  "firewall_readOnlyRuleHint": "Protected or unsupported rules cannot be changed in the app",
+  "@firewall_readOnlyRuleHint": {"description": "Why a firewall rule cannot be changed."},
+  "firewall_noticeFamilyUnavailable": "Some IP versions are unavailable on this server.",
+  "@firewall_noticeFamilyUnavailable": {"description": "Firewall inventory notice for an unavailable IP family."},
+  "firewall_noticeDefaultScopeMismatch": "The active rule scope differs from the default scope.",
+  "@firewall_noticeDefaultScopeMismatch": {"description": "Firewall inventory notice for scope mismatch."},
+  "firewall_noticeManagedScopeInactive": "Some managed rule scopes are inactive.",
+  "@firewall_noticeManagedScopeInactive": {"description": "Firewall inventory notice for inactive managed scopes."},
+  "firewall_noticeUnmanagedScopes": "Active rules exist outside the managed scope.",
+  "@firewall_noticeUnmanagedScopes": {"description": "Firewall inventory notice for unmanaged active scopes."},
+  "firewall_noticeRuntimeMismatch": "Running and saved firewall rules differ.",
+  "@firewall_noticeRuntimeMismatch": {"description": "Firewall inventory notice for runtime and permanent rule mismatch."},
+  "firewall_noticeDefaultPolicy": "The default firewall policy may affect these rules.",
+  "@firewall_noticeDefaultPolicy": {"description": "Firewall inventory notice about the default policy."},
+  "firewall_noticeManagedScopeMissing": "A managed rule scope is missing.",
+  "@firewall_noticeManagedScopeMissing": {"description": "Firewall inventory notice for a missing managed scope."},
   "panelSettings_enabled": "Enabled",
   "@panelSettings_enabled": {
     "description": "Enabled status label."
@@ -14176,6 +14268,32 @@
   "databases_management": "Database Management",
   "@databases_management": {
     "description": "Database action sheet management section title."
+  },
+  "databases_managerNotInstalled": "{name} is not installed",
+  "@databases_managerNotInstalled": {
+    "description": "Database web manager missing dialog title.",
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "databases_managerInstallPrompt": "Install this database management tool from the App Store first.",
+  "@databases_managerInstallPrompt": {
+    "description": "Database web manager installation guidance."
+  },
+  "databases_goToAppStore": "Go to App Store",
+  "@databases_goToAppStore": {
+    "description": "Open App Store action for a missing database manager."
+  },
+  "databases_serverAddressUnavailable": "Unable to get the server address",
+  "@databases_serverAddressUnavailable": {
+    "description": "Database manager server address lookup failure."
+  },
+  "databases_openManagerFailed": "Unable to open {name}",
+  "@databases_openManagerFailed": {
+    "description": "Database web manager browser launch failure.",
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "databases_webPageLoadFailed": "Failed to load the web page",
+  "@databases_webPageLoadFailed": {
+    "description": "In-app database manager web page load failure."
   },
   "databases_changePassword": "Change Password",
   "@databases_changePassword": {

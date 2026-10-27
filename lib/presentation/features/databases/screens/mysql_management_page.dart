@@ -6,11 +6,14 @@ import '../../../../core/localization/l10n_x.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../common/app_toast.dart';
 import '../../../../data/repositories_impl/database_repository_impl.dart';
+import '../../../../data/repositories_impl/server_repository_impl.dart';
+import '../../app_store/screens/app_store_page.dart';
 import '../widgets/database_connection_info_sheet.dart';
 import '../widgets/database_create_database_sheet.dart';
 import '../widgets/pg_create_database_sheet.dart';
 import '../../../common/components/floating_tab_bar.dart';
 import '../../../common/components/frosted_header.dart';
+import '../../../common/components/in_app_browser_page.dart';
 import '../../../common/components/frosted_overlay_menu.dart';
 import '../../../common/components/terminal/app_terminal.dart';
 import '../../server_detail/providers/active_server_provider.dart';
@@ -211,6 +214,33 @@ class _MysqlManagementPageState extends ConsumerState<_MysqlManagementContent> {
                           isRemote: _isRemote,
                         ),
                       ),
+                      if (_isPg)
+                        FrostedMenuItem(
+                          text: 'pgAdmin 4',
+                          icon: TablerIcons.world,
+                          action: () => _openDatabaseManager(
+                            appKey: 'pgadmin4',
+                            displayName: 'pgAdmin 4',
+                          ),
+                        ),
+                      if (!_isPg)
+                        FrostedMenuItem(
+                          text: 'phpMyAdmin',
+                          icon: TablerIcons.world,
+                          action: () => _openDatabaseManager(
+                            appKey: 'phpmyadmin',
+                            displayName: 'phpMyAdmin',
+                          ),
+                        ),
+                      if (!_isPg)
+                        FrostedMenuItem(
+                          text: 'Adminer',
+                          icon: TablerIcons.world,
+                          action: () => _openDatabaseManager(
+                            appKey: 'adminer',
+                            displayName: 'Adminer',
+                          ),
+                        ),
                     ],
                   ),
             ),
@@ -259,6 +289,69 @@ class _MysqlManagementPageState extends ConsumerState<_MysqlManagementContent> {
     _ when _isPg => 'PostgreSQL',
     _ => 'MySQL',
   };
+
+  Future<void> _openDatabaseManager({
+    required String appKey,
+    required String displayName,
+  }) async {
+    try {
+      final repo = await ref.read(databaseRepositoryProvider.future);
+      final port = await repo.getInstalledAppPort(type: appKey);
+      if (!mounted) return;
+
+      if (port <= 0) {
+        final openStore = await showCupertinoDialog<bool>(
+          context: context,
+          builder: (dialogContext) => CupertinoAlertDialog(
+            title: Text(
+              context.l10n.databases_managerNotInstalled(displayName),
+            ),
+            content: Text(context.l10n.databases_managerInstallPrompt),
+            actions: [
+              CupertinoDialogAction(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(context.l10n.common_cancel),
+              ),
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(context.l10n.databases_goToAppStore),
+              ),
+            ],
+          ),
+        );
+        if (openStore == true && mounted) {
+          final serverId = ref.read(activeServerIdProvider);
+          await Navigator.of(context).push(
+            CupertinoPageRoute<void>(
+              builder: (_) => AppStorePage(serverId: serverId),
+            ),
+          );
+        }
+        return;
+      }
+
+      final serverId = ref.read(activeServerIdProvider);
+      final server = await ref.read(serverRepositoryProvider).find(serverId);
+      if (!mounted) return;
+      if (server == null) {
+        throw StateError(context.l10n.databases_serverAddressUnavailable);
+      }
+      final uri = Uri(scheme: 'http', host: server.host, port: port);
+      await Navigator.of(context).push(
+        CupertinoPageRoute<void>(
+          builder: (_) => InAppBrowserPage(title: displayName, initialUrl: uri),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        showAppErrorToast(
+          context.l10n.databases_openManagerFailed(displayName),
+          description: '$e',
+        );
+      }
+    }
+  }
 
   Future<void> _syncFromServer() async {
     final confirmed = await showCupertinoDialog<bool>(

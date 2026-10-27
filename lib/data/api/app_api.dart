@@ -67,6 +67,26 @@ class AppApi {
     return (resp.data?['data'] as Map<String, dynamic>?) ?? {};
   }
 
+  /// 获取已安装应用暴露的主端口。
+  ///
+  /// 1Panel 在应用未安装时返回 `0`，调用方可据此引导用户前往应用商店。
+  Future<int> getInstalledAppPort({
+    required String type,
+    String name = '',
+  }) async {
+    final resp = await _client.post<Map<String, dynamic>>(
+      '/api/v2/apps/installed/loadport',
+      data: {'type': type, 'name': name},
+    );
+    final value = resp.data?['data'];
+    return switch (value) {
+      int port => port,
+      num port => port.toInt(),
+      String port => int.tryParse(port) ?? 0,
+      _ => 0,
+    };
+  }
+
   /// 查询已安装应用。
   Future<PageResult<AppInstalledDto>> searchInstalledApps(
     AppInstalledSearchReq req,

@@ -2383,8 +2383,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_sync_webDavUrlLabel => 'WebDAV 地址';
 
   @override
-  String get settings_sync_webDavUrlPlaceholder =>
-      'https://example.com/dav/mono-dash/';
+  String get settings_sync_webDavUrlPlaceholder => 'https://example.com/dav/';
+
+  @override
+  String get settings_sync_webDavPathLabel => '同步文件路径';
+
+  @override
+  String get settings_sync_webDavPathHint =>
+      '相对于 WebDAV 地址；默认 /mono-dash/data.json。首次同步时会尝试创建目录。';
+
+  @override
+  String get settings_sync_webDavPathInvalid => '请输入以 / 开头的文件路径';
 
   @override
   String get settings_sync_webDavUsernameLabel => '用户名';
@@ -2397,6 +2406,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_sync_webDavPasswordPlaceholder => '可留空';
+
+  @override
+  String get settings_sync_webDavShowPassword => '显示密码';
+
+  @override
+  String get settings_sync_webDavHidePassword => '隐藏密码';
 
   @override
   String get settings_sync_webDavUrlInvalid => '请输入有效的 http 或 https 地址';
@@ -4185,6 +4200,78 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get panelSettings_apiInterface => 'API 接口';
+
+  @override
+  String get panelSettings_webPanelRequired => '请在 1Panel 网页面板中操作';
+
+  @override
+  String get panelSettings_localApiKey => '此 App 保存的连接密钥';
+
+  @override
+  String get firewall_ruleStale => '规则已在服务器上变化，列表已刷新';
+
+  @override
+  String get firewall_lockoutRisk => '此改动可能导致无法访问面板，已被防火墙阻止';
+
+  @override
+  String get firewall_operationInProgress => '操作进行中';
+
+  @override
+  String get firewall_familyFilter => 'IP 版本';
+
+  @override
+  String get firewall_allFamilies => '全部 IP 版本';
+
+  @override
+  String get firewall_stateManaged => '已管理';
+
+  @override
+  String get firewall_stateAdopted => '已纳管';
+
+  @override
+  String get firewall_stateExternal => '外部规则';
+
+  @override
+  String get firewall_stateDrifted => '已变更';
+
+  @override
+  String get firewall_stateProtected => '受保护';
+
+  @override
+  String get firewall_adoptRule => '纳管规则';
+
+  @override
+  String get firewall_adoptRuleHint => '纳管后可在应用中编辑和删除此规则';
+
+  @override
+  String get firewall_adoptRuleConfirm => '将此服务器上的外部规则交由 1Panel 管理？';
+
+  @override
+  String get firewall_readOnlyRule => '此规则只可查看';
+
+  @override
+  String get firewall_readOnlyRuleHint => '受保护或不受支持的规则不能在应用中修改';
+
+  @override
+  String get firewall_noticeFamilyUnavailable => '此服务器的部分 IP 版本不可用';
+
+  @override
+  String get firewall_noticeDefaultScopeMismatch => '当前规则范围与默认范围不一致';
+
+  @override
+  String get firewall_noticeManagedScopeInactive => '部分受管理的规则范围未启用';
+
+  @override
+  String get firewall_noticeUnmanagedScopes => '管理范围之外还有正在生效的规则';
+
+  @override
+  String get firewall_noticeRuntimeMismatch => '运行中的规则与已保存的规则不一致';
+
+  @override
+  String get firewall_noticeDefaultPolicy => '默认防火墙策略可能影响这些规则';
+
+  @override
+  String get firewall_noticeManagedScopeMissing => '受管理的规则范围缺失';
 
   @override
   String get panelSettings_enabled => '已启用';
@@ -10165,6 +10252,28 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get databases_management => '数据库管理';
+
+  @override
+  String databases_managerNotInstalled(String name) {
+    return '未安装 $name';
+  }
+
+  @override
+  String get databases_managerInstallPrompt => '请先从应用商店安装该数据库管理工具。';
+
+  @override
+  String get databases_goToAppStore => '前往应用商店';
+
+  @override
+  String get databases_serverAddressUnavailable => '无法获取服务器地址';
+
+  @override
+  String databases_openManagerFailed(String name) {
+    return '无法打开 $name';
+  }
+
+  @override
+  String get databases_webPageLoadFailed => '网页加载失败';
 
   @override
   String get databases_changePassword => '改密';

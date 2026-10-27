@@ -16,10 +16,12 @@ class PanelSettingsController extends _$PanelSettingsController {
       repo.searchSettings(),
       repo.searchCoreSettings(),
     ]);
-    return PanelSettingsViewState.fromSettings(
-      results[0],
-      results[1],
-    );
+    final state = PanelSettingsViewState.fromSettings(results[0], results[1]);
+    final serverId = ref.read(activeServerIdProvider);
+    final localApiKey = await ref
+        .read(storageServiceProvider)
+        .getApiKey(serverId);
+    return state.copyWith(apiKey: localApiKey ?? '');
   }
 
   Future<void> refresh() async {
@@ -60,7 +62,7 @@ class PanelSettingsController extends _$PanelSettingsController {
     final prev = state.valueOrNull;
     if (prev != null) {
       state = AsyncValue.data(prev.copyWith(apiKey: newKey));
-      
+
       // 同步到本地存储
       final serverId = ref.read(activeServerIdProvider);
       final storage = ref.read(storageServiceProvider);
@@ -83,7 +85,7 @@ class PanelSettingsController extends _$PanelSettingsController {
       'apiInterfaceStatus': apiInterfaceStatus,
       'apiKeyValidityTime': apiKeyValidityTime,
     });
-    
+
     final prev = state.valueOrNull;
     if (prev != null) {
       // 如果 API Key 发生了变化，同步到本地存储
@@ -93,12 +95,14 @@ class PanelSettingsController extends _$PanelSettingsController {
         await storage.saveApiKey(serverId, apiKey);
       }
 
-      state = AsyncValue.data(prev.copyWith(
-        apiKey: apiKey,
-        ipWhiteList: ipWhiteList,
-        apiInterfaceStatus: apiInterfaceStatus,
-        apiKeyValidityTime: apiKeyValidityTime,
-      ));
+      state = AsyncValue.data(
+        prev.copyWith(
+          apiKey: apiKey,
+          ipWhiteList: ipWhiteList,
+          apiInterfaceStatus: apiInterfaceStatus,
+          apiKeyValidityTime: apiKeyValidityTime,
+        ),
+      );
     }
   }
 

@@ -7,6 +7,10 @@ class FirewallBaseInfoDto {
     required this.isBind,
     required this.version,
     required this.pingStatus,
+    this.backend = '',
+    this.reason = '',
+    this.syncError = '',
+    this.lifecycleTaskID = '',
   });
 
   factory FirewallBaseInfoDto.fromJson(Map<String, dynamic> json) {
@@ -18,6 +22,10 @@ class FirewallBaseInfoDto {
       isBind: json['isBind'] as bool? ?? false,
       version: json['version'] as String? ?? '',
       pingStatus: json['pingStatus'] as String? ?? 'Disable',
+      backend: json['backend'] as String? ?? '',
+      reason: json['reason'] as String? ?? '',
+      syncError: json['syncError'] as String? ?? '',
+      lifecycleTaskID: json['lifecycleTaskID'] as String? ?? '',
     );
   }
 
@@ -28,6 +36,10 @@ class FirewallBaseInfoDto {
   final bool isBind;
   final String version;
   final String pingStatus;
+  final String backend;
+  final String reason;
+  final String syncError;
+  final String lifecycleTaskID;
 
   bool get isPingEnabled => pingStatus == 'Enable';
 }

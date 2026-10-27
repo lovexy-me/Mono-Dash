@@ -389,31 +389,9 @@ class _SecurityContentState extends ConsumerState<_SecurityContent> {
                             icon: TablerIcons.qrcode,
                             iconColor: CupertinoColors.systemBlue,
                             title: l10n.panelSettings_mfaTwoFactor,
-                            subtitle: Text(
-                              _get('mfaStatus') == 'Enable'
-                                  ? l10n.panelSettings_enabled
-                                  : l10n.panelSettings_disabled,
-                            ),
-                            trailing: AppToggleSwitch(
-                              value: _get('mfaStatus') == 'Enable',
-                              onChanged: (v) async {
-                                if (!v) {
-                                  final confirmed = await showActionSheet<bool>(
-                                    context: context,
-                                    useRootNavigator: true,
-                                    builder: (ctx) => AppConfirmSheet(
-                                      title: l10n.panelSettings_closeMfa,
-                                      content:
-                                          l10n.panelSettings_closeMfaContent,
-                                      icon: TablerIcons.qrcode,
-                                      iconColor: CupertinoColors.systemOrange,
-                                    ),
-                                  );
-                                  if (confirmed == true && mounted) {
-                                    await _update('MFAStatus', 'Disable');
-                                  }
-                                }
-                              },
+                            subtitle: Text(l10n.panelSettings_webPanelRequired),
+                            onTap: () => showAppErrorToast(
+                              l10n.panelSettings_webPanelRequired,
                             ),
                           ),
                         ],

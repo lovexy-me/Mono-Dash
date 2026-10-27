@@ -6,6 +6,8 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../../../../core/localization/l10n_x.dart';
 import '../../../../data/dto/firewall/firewall_base_info_dto.dart';
+import '../../../../data/api/unified_firewall_api.dart';
+import '../../../../core/network/dio_client_provider.dart';
 import '../../../../data/repositories_impl/firewall_repository_impl.dart';
 import '../../../common/app_toast.dart';
 import '../../../common/components/app_confirm_sheet.dart';
@@ -20,6 +22,7 @@ import '../widgets/firewall_port_multi_select_bar.dart';
 import '../widgets/ip_rule_form_sheet.dart';
 import '../widgets/ip_rules_tab.dart';
 import '../widgets/port_rules_tab.dart';
+import 'unified_firewall_page.dart';
 
 class FirewallPage extends StatelessWidget {
   const FirewallPage({super.key, required this.serverId});
@@ -30,7 +33,65 @@ class FirewallPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderScope(
       overrides: [activeServerIdProvider.overrideWithValue(serverId)],
-      child: const _FirewallContent(),
+      child: const _FirewallRoute(),
+    );
+  }
+}
+
+class _FirewallRoute extends ConsumerStatefulWidget {
+  const _FirewallRoute();
+
+  @override
+  ConsumerState<_FirewallRoute> createState() => _FirewallRouteState();
+}
+
+class _FirewallRouteState extends ConsumerState<_FirewallRoute> {
+  late Future<(UnifiedFirewallApi, FirewallApiVersion)> _version;
+
+  @override
+  void initState() {
+    super.initState();
+    _version = _detect();
+  }
+
+  Future<(UnifiedFirewallApi, FirewallApiVersion)> _detect() async {
+    final serverId = ref.read(activeServerIdProvider);
+    final client = await ref.read(dioClientProvider(serverId).future);
+    final api = UnifiedFirewallApi(client);
+    final version = await api.detectVersion(refresh: true);
+    return (api, version);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<(UnifiedFirewallApi, FirewallApiVersion)>(
+      future: _version,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return FrostedScaffold(
+            title: context.l10n.firewall_title,
+            body: Center(
+              child: AppEmptyState(
+                icon: TablerIcons.alert_circle,
+                title: context.l10n.common_loadingFailed,
+                subtitle: '${snapshot.error}',
+                actionLabel: context.l10n.common_retry,
+                onAction: () => setState(() => _version = _detect()),
+              ),
+            ),
+          );
+        }
+        if (!snapshot.hasData) {
+          return FrostedScaffold(
+            title: context.l10n.firewall_title,
+            body: const Center(child: CupertinoActivityIndicator()),
+          );
+        }
+        final (api, version) = snapshot.data!;
+        return version == FirewallApiVersion.unified
+            ? UnifiedFirewallPage(api: api)
+            : const _FirewallContent();
+      },
     );
   }
 }

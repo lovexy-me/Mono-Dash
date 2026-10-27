@@ -53,6 +53,7 @@ class StorageService {
   static const _serverMemoPrefix = 'server_memo_v1_';
   static const _webDavSyncEnabledKey = 'webdav_sync_enabled';
   static const _webDavSyncUrlKey = 'webdav_sync_url';
+  static const _webDavSyncPathKey = 'webdav_sync_path';
   static const _webDavSyncUsernameKey = 'webdav_sync_username';
   static const _webDavSyncPasswordKey = 'webdav_sync_password';
   static const _webDavSyncApiKeysKey = 'webdav_sync_api_keys';
@@ -249,9 +250,30 @@ class StorageService {
   }
 
   Future<WebDavSyncConfig> getWebDavSyncConfig() async {
+    final storedUrl = _prefs.getString(_webDavSyncUrlKey) ?? '';
+    var url = storedUrl;
+    var path = _prefs.getString(_webDavSyncPathKey);
+    if (path == null && storedUrl.isNotEmpty) {
+      // Keep existing sync files in place when upgrading from URL-only config.
+      final uri = Uri.tryParse(storedUrl);
+      if (uri != null &&
+          uri.pathSegments.isNotEmpty &&
+          uri.pathSegments.last.endsWith('.json')) {
+        path = '/${uri.pathSegments.last}';
+        url = uri
+            .replace(pathSegments: uri.pathSegments.toList()..removeLast())
+            .toString();
+      } else if (uri?.host.toLowerCase() == 'dav.jianguoyun.com' &&
+          (uri?.path == '/dav' || uri?.path == '/dav/')) {
+        path = WebDavSyncClient.defaultPath;
+      } else {
+        path = '/${WebDavSyncClient.payloadFileName}';
+      }
+    }
     return WebDavSyncConfig(
       enabled: isWebDavSyncEnabled,
-      url: _prefs.getString(_webDavSyncUrlKey) ?? '',
+      url: url,
+      path: path ?? WebDavSyncClient.defaultPath,
       username: _prefs.getString(_webDavSyncUsernameKey) ?? '',
       password: await _secureStorage.read(key: _webDavSyncPasswordKey) ?? '',
       syncApiKeys: _prefs.getBool(_webDavSyncApiKeysKey) ?? false,
@@ -260,12 +282,14 @@ class StorageService {
 
   Future<void> saveWebDavSyncConfig({
     required String url,
+    required String path,
     required String username,
     required String password,
     required bool syncApiKeys,
   }) async {
     final previousConfig = await getWebDavSyncConfig();
     await _prefs.setString(_webDavSyncUrlKey, url.trim());
+    await _prefs.setString(_webDavSyncPathKey, path.trim());
     await _prefs.setString(_webDavSyncUsernameKey, username.trim());
     await _prefs.setBool(_webDavSyncApiKeysKey, syncApiKeys);
     if (password.isEmpty) {
@@ -282,6 +306,7 @@ class StorageService {
       final sanitizedConfig = WebDavSyncConfig(
         enabled: previousConfig.enabled,
         url: previousConfig.url,
+        path: previousConfig.path,
         username: previousConfig.username,
         password: previousConfig.password,
         syncApiKeys: false,
@@ -436,6 +461,7 @@ class StorageService {
     try {
       final client = WebDavSyncClient(
         url: config.url,
+        path: config.path,
         username: config.username,
         password: config.password,
       );
@@ -679,6 +705,7 @@ class StorageService {
 
     final client = WebDavSyncClient(
       url: config.url,
+      path: config.path,
       username: config.username,
       password: config.password,
     );

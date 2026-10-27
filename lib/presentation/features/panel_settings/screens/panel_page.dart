@@ -12,7 +12,6 @@ import '../widgets/panel_settings_components.dart';
 import '../../../common/components/app_action_picker_sheet.dart';
 import '../../../common/components/app_picker.dart';
 import '../widgets/edit_setting_value_sheet.dart';
-import '../widgets/edit_password_sheet.dart';
 import '../widgets/api_interface_sheet.dart';
 
 class PanelPage extends StatelessWidget {
@@ -92,50 +91,16 @@ class _PanelContent extends ConsumerWidget {
                   subtitle: settings.userName.isEmpty
                       ? '--'
                       : settings.userName,
-                  onTap: () async {
-                    final result = await showEditValueSheet(
-                      context,
-                      title: l10n.panelSettings_changePanelUsername,
-                      initialValue: settings.userName,
-                      placeholder:
-                          l10n.panelSettings_newPanelUsernamePlaceholder,
-                    );
-                    if (result != null && context.mounted) {
-                      await _updateSetting(ref, context, 'UserName', result);
-                    }
-                  },
+                  onTap: () =>
+                      showAppErrorToast(l10n.panelSettings_webPanelRequired),
                 ),
                 PanelSettingsTile(
                   icon: TablerIcons.lock,
                   iconColor: CupertinoColors.systemOrange,
                   title: l10n.panelSettings_panelLoginPassword,
                   subtitle: l10n.panelSettings_changePanelLoginPassword,
-                  onTap: () async {
-                    final result = await showEditPasswordSheet(context);
-                    if (result != null) {
-                      try {
-                        final controller = ref.read(
-                          panelSettingsControllerProvider.notifier,
-                        );
-                        await controller.updatePassword(
-                          oldPassword: result.$1,
-                          newPassword: result.$2,
-                        );
-                        if (context.mounted) {
-                          showAppSuccessToast(
-                            l10n.panelSettings_passwordUpdated,
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          showAppErrorToast(
-                            l10n.panelSettings_passwordUpdateFailed,
-                            description: e.toString(),
-                          );
-                        }
-                      }
-                    }
-                  },
+                  onTap: () =>
+                      showAppErrorToast(l10n.panelSettings_webPanelRequired),
                 ),
               ],
             ),
@@ -298,9 +263,9 @@ class _PanelContent extends ConsumerWidget {
                   icon: TablerIcons.api_app,
                   iconColor: CupertinoColors.systemGreen,
                   title: l10n.panelSettings_apiInterface,
-                  subtitle: settings.apiEnabled
-                      ? l10n.panelSettings_enabled
-                      : l10n.panelSettings_disabled,
+                  subtitle: settings.apiKey.isNotEmpty
+                      ? l10n.panelSettings_localApiKey
+                      : l10n.panelSettings_webPanelRequired,
                   onTap: () => showApiInterfaceSheet(context, state: settings),
                 ),
               ],

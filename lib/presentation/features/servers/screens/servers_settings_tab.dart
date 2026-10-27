@@ -511,6 +511,7 @@ class ServersSettingsTab extends ConsumerWidget {
     try {
       await storage.saveWebDavSyncConfig(
         url: result.url,
+        path: result.path,
         username: result.username,
         password: result.password,
         syncApiKeys: result.syncApiKeys,
@@ -832,12 +833,14 @@ class ServersSettingsTab extends ConsumerWidget {
 class _WebDavConfigResult {
   const _WebDavConfigResult({
     required this.url,
+    required this.path,
     required this.username,
     required this.password,
     required this.syncApiKeys,
   });
 
   final String url;
+  final String path;
   final String username;
   final String password;
   final bool syncApiKeys;
@@ -854,49 +857,72 @@ class _WebDavConfigSheet extends StatefulWidget {
 
 class _WebDavConfigSheetState extends State<_WebDavConfigSheet> {
   late final TextEditingController _urlController;
+  late final TextEditingController _pathController;
   late final TextEditingController _usernameController;
   late final TextEditingController _passwordController;
   late bool _syncApiKeys;
+  bool _obscurePassword = true;
   String? _urlError;
+  String? _pathError;
 
   @override
   void initState() {
     super.initState();
     _urlController = TextEditingController(text: widget.config.url);
+    _pathController = TextEditingController(text: widget.config.path);
     _usernameController = TextEditingController(text: widget.config.username);
     _passwordController = TextEditingController(text: widget.config.password);
     _syncApiKeys = widget.config.syncApiKeys;
-    _validateUrl(_urlController.text);
   }
 
   @override
   void dispose() {
     _urlController.dispose();
+    _pathController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  void _validateUrl(String value) {
+  String? _urlValidationError(String value) {
     final trimmed = value.trim();
-    String? error;
     if (trimmed.isNotEmpty) {
       final uri = Uri.tryParse(trimmed);
       if (uri == null ||
           !uri.hasScheme ||
           uri.host.isEmpty ||
           (uri.scheme != 'https' && uri.scheme != 'http')) {
-        error = context.l10n.settings_sync_webDavUrlInvalid;
+        return context.l10n.settings_sync_webDavUrlInvalid;
       }
     }
-    setState(() => _urlError = error);
+    return null;
+  }
+
+  String? _pathValidationError(String value) {
+    final path = value.trim();
+    final segments = path.split('/').where((part) => part.isNotEmpty);
+    final invalid =
+        !path.startsWith('/') ||
+        path.endsWith('/') ||
+        segments.isEmpty ||
+        segments.any((part) => part == '.' || part == '..') ||
+        path.contains('?') ||
+        path.contains('#');
+    return invalid ? context.l10n.settings_sync_webDavPathInvalid : null;
   }
 
   void _save() {
-    if (_urlError != null) return;
+    final urlError = _urlValidationError(_urlController.text);
+    final pathError = _pathValidationError(_pathController.text);
+    setState(() {
+      _urlError = urlError;
+      _pathError = pathError;
+    });
+    if (urlError != null || pathError != null) return;
     Navigator.of(context).pop(
       _WebDavConfigResult(
         url: _urlController.text.trim(),
+        path: _pathController.text.trim(),
         username: _usernameController.text.trim(),
         password: _passwordController.text,
         syncApiKeys: _syncApiKeys,
@@ -967,7 +993,15 @@ class _WebDavConfigSheetState extends State<_WebDavConfigSheet> {
                 placeholder: l10n.settings_sync_webDavUrlPlaceholder,
                 keyboardType: TextInputType.url,
                 textInputAction: TextInputAction.next,
-                onChanged: _validateUrl,
+                onChanged: (_) {
+                  if (_urlError != null) setState(() => _urlError = null);
+                },
+                onSubmitted: (_) => setState(
+                  () => _urlError = _urlValidationError(_urlController.text),
+                ),
+                onTapOutside: (_) => setState(
+                  () => _urlError = _urlValidationError(_urlController.text),
+                ),
               ),
             ),
             if (_urlError != null) ...[
@@ -980,6 +1014,45 @@ class _WebDavConfigSheetState extends State<_WebDavConfigSheet> {
                 ),
               ),
             ],
+            const SizedBox(height: 14),
+            AppFormItem(
+              label: l10n.settings_sync_webDavPathLabel,
+              icon: CupertinoIcons.doc_text,
+              child: AppFormTextField(
+                controller: _pathController,
+                placeholder: WebDavSyncClient.defaultPath,
+                keyboardType: TextInputType.url,
+                textInputAction: TextInputAction.next,
+                onChanged: (_) {
+                  if (_pathError != null) setState(() => _pathError = null);
+                },
+                onSubmitted: (_) => setState(
+                  () => _pathError = _pathValidationError(_pathController.text),
+                ),
+                onTapOutside: (_) => setState(
+                  () => _pathError = _pathValidationError(_pathController.text),
+                ),
+              ),
+            ),
+            if (_pathError != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                _pathError!,
+                style: const TextStyle(
+                  color: CupertinoColors.systemRed,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+            const SizedBox(height: 8),
+            Text(
+              l10n.settings_sync_webDavPathHint,
+              style: TextStyle(
+                fontSize: 12,
+                height: 1.35,
+                color: AppColors.secondaryLabel(context),
+              ),
+            ),
             const SizedBox(height: 14),
             AppFormItem(
               label: l10n.settings_sync_webDavUsernameLabel,
@@ -997,9 +1070,26 @@ class _WebDavConfigSheetState extends State<_WebDavConfigSheet> {
               child: AppFormTextField(
                 controller: _passwordController,
                 placeholder: l10n.settings_sync_webDavPasswordPlaceholder,
-                obscureText: true,
+                obscureText: _obscurePassword,
                 textInputAction: TextInputAction.done,
                 onSubmitted: (_) => _save(),
+                suffix: Semantics(
+                  label: _obscurePassword
+                      ? l10n.settings_sync_webDavShowPassword
+                      : l10n.settings_sync_webDavHidePassword,
+                  button: true,
+                  child: CupertinoButton(
+                    minimumSize: Size.zero,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
+                    child: Icon(
+                      _obscurePassword ? TablerIcons.eye_off : TablerIcons.eye,
+                      size: 20,
+                      color: AppColors.secondaryLabel(context),
+                    ),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 14),
@@ -1013,7 +1103,7 @@ class _WebDavConfigSheetState extends State<_WebDavConfigSheet> {
             ),
             const SizedBox(height: 24),
             CupertinoButton.filled(
-              onPressed: _urlError == null ? _save : null,
+              onPressed: _save,
               child: Text(l10n.common_save),
             ),
           ],

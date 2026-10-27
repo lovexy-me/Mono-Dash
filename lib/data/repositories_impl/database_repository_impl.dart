@@ -32,6 +32,10 @@ class DatabaseRepositoryImpl implements DatabaseRepository {
   }) => _appApi.checkInstalledByKey(key: key, name: name);
 
   @override
+  Future<int> getInstalledAppPort({required String type, String name = ''}) =>
+      _appApi.getInstalledAppPort(type: type, name: name);
+
+  @override
   Future<PageResult<DatabaseSearchItemDto>> searchDatabases({
     required String database,
     int page = 1,

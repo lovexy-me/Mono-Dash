@@ -6,6 +6,7 @@ class WebDavSyncConfig {
   const WebDavSyncConfig({
     required this.enabled,
     required this.url,
+    required this.path,
     required this.username,
     required this.password,
     required this.syncApiKeys,
@@ -13,6 +14,7 @@ class WebDavSyncConfig {
 
   final bool enabled;
   final String url;
+  final String path;
   final String username;
   final String password;
   final bool syncApiKeys;
@@ -23,9 +25,10 @@ class WebDavSyncConfig {
 class WebDavSyncClient {
   WebDavSyncClient({
     required String url,
+    required String path,
     required String username,
     required String password,
-  }) : _payloadUri = _resolvePayloadUri(url),
+  }) : _payloadUri = _resolvePayloadUri(url, path),
        _dio = Dio(
          BaseOptions(
            headers: _headers(username, password),
@@ -38,6 +41,7 @@ class WebDavSyncClient {
        );
 
   static const payloadFileName = 'mono_dash_server_sync_payload_v1.json';
+  static const defaultPath = '/mono-dash/data.json';
 
   final Dio _dio;
   final Uri _payloadUri;
@@ -109,19 +113,28 @@ class WebDavSyncClient {
     }
   }
 
-  static Uri _resolvePayloadUri(String rawUrl) {
+  static Uri _resolvePayloadUri(String rawUrl, String rawPath) {
     final trimmed = rawUrl.trim();
     final uri = Uri.parse(trimmed);
     if (!uri.hasScheme || uri.host.isEmpty) {
       throw FormatException('Invalid WebDAV URL', rawUrl);
     }
-    if (uri.pathSegments.isNotEmpty &&
-        uri.pathSegments.last.endsWith('.json')) {
-      return uri;
+    final path = rawPath.trim();
+    final segments = path.split('/').where((part) => part.isNotEmpty);
+    if (!path.startsWith('/') ||
+        path.endsWith('/') ||
+        segments.isEmpty ||
+        segments.any(
+          (part) =>
+              part == '.' ||
+              part == '..' ||
+              part.contains('?') ||
+              part.contains('#'),
+        )) {
+      throw FormatException('Invalid WebDAV sync path', rawPath);
     }
-
-    final path = uri.path.endsWith('/') ? uri.path : '${uri.path}/';
-    return uri.replace(path: '$path$payloadFileName');
+    final basePath = uri.path.endsWith('/') ? uri.path : '${uri.path}/';
+    return uri.replace(path: '$basePath${segments.join('/')}');
   }
 
   static Map<String, String> _headers(String username, String password) {
